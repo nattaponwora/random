@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import confetti from 'canvas-confetti'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
@@ -11,8 +11,6 @@ export default function Home() {
   const [currentName, setCurrentName] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isReadyState, setIsReadyState] = useState(true) // New state to manage button visibility
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const [speed, setSpeed] = useState(100) // Speed for slowing down the random number change
 
   useEffect(() => {
     const stored = localStorage.getItem('names')
