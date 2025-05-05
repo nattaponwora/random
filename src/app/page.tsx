@@ -9,8 +9,8 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('')
   const [isRunning, setIsRunning] = useState(false)
   const [currentName, setCurrentName] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [showStartButton, setShowStartButton] = useState(true) // New state to manage button visibility
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isReadyState, setIsReadyState] = useState(true) // New state to manage button visibility
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const [speed, setSpeed] = useState(100) // Speed for slowing down the random number change
 
@@ -26,6 +26,7 @@ export default function Home() {
   const startRolling = () => {
     if (names.length === 0) return
     setIsRunning(true)
+    setIsReadyState(false)
   
     const startTime = Date.now()
     let interval = 10
@@ -95,9 +96,15 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen bg-green-100">
+    <div className="flex min-h-screen">
+        {/* Background image */}
+        <div
+          className="fixed inset-0 bg-cover bg-center opacity-30 z-0"
+          style={{ backgroundImage: `url('/bg.jpg')` }}
+        />
+      
       {/* Sidebar */}
-      <div className="relative">
+      <div className="relative z-20">
         <div
           className={`transition-all duration-300 h-screen bg-white shadow-md overflow-hidden ${
             isSidebarOpen ? 'w-64 p-4' : 'w-0'
@@ -136,24 +143,33 @@ export default function Home() {
         {/* Sidebar toggle */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute top-4 -right-4 z-10 bg-white border rounded-full shadow p-1 hover:bg-gray-100 transition"
+          className="absolute top-4 -right-4 z-10 bg-white text-green-700 border rounded-full shadow p-1 hover:bg-gray-100 transition"
         >
           {isSidebarOpen ? <FaChevronLeft /> : <FaChevronRight />}
         </button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center text-center px-4">
-        <h1 className={`text-[160px] font-bold mb-8 transition-all duration-500 ${isRunning ? 'text-red-600' : 'text-pink-500'}`}>
-          {currentName || 'พร้อมแล้ว!'}
-        </h1>
-        {showStartButton && (
+      <div className="flex-1 flex flex-col justify-center items-center text-center px-4 z-10">
+        {isReadyState && (
+            <h1 className={`text-[160px] font-bold mb-8 transition-all duration-500 text-green-700`}>
+            พร้อมแล้ว!
+          </h1>
+        )}
+
+        {!isReadyState && (
+          <h1 className={`text-[160px] font-bold mb-8 transition-all duration-500 ${isRunning ? 'text-green-700' : 'text-green-400'}`}>
+          {currentName}
+          </h1>
+        )}
+       
+        {!isRunning && (
           <button
             onClick={startRolling}
             disabled={isRunning || names.length === 0}
-            className="bg-green-500 text-white px-6 py-3 rounded text-xl hover:bg-green-600 disabled:opacity-50"
+            className="bg-green-500 text-white px-10 py-3 rounded text-xl hover:bg-green-600 disabled:opacity-50"
           >
-            เริ่มสุ่ม
+            เริ่ม
           </button>
         )}
       </div>
