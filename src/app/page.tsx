@@ -26,30 +26,37 @@ export default function Home() {
   const startRolling = () => {
     if (names.length === 0) return
     setIsRunning(true)
-    setShowStartButton(false) // Hide the button when start rolling
+  
     const startTime = Date.now()
-
-    intervalRef.current = setInterval(() => {
-      const index = Math.floor(Math.random() * names.length)
-      setCurrentName(names[index])
-
-      if (Date.now() - startTime >= 10000) {
-        clearInterval(intervalRef.current!)
+    let interval = 10
+    const totalDuration = 10000 // 10 วินาที
+    let lastTime = startTime
+  
+    const run = () => {
+      const now = Date.now()
+      const elapsed = now - startTime
+  
+      if (elapsed >= totalDuration) {
         setIsRunning(false)
-        setShowStartButton(true) // Show the button after rolling is done
         fireConfetti()
         playApplause()
-        setNames((prev) => prev.filter((_, i) => i !== 0)) // Remove the first number in the list
+  
+        // ลบชื่อที่ถูกเลือกออกจากลิสต์
+        setNames((prev) => prev.filter((name) => name !== currentName))
+        return
       }
-    }, speed)
-
-    // Gradually slow down the speed
-    const slowDownInterval = setInterval(() => {
-      if (speed >= 1000) {
-        clearInterval(slowDownInterval) // Stop slowing down after a certain point
+  
+      if (now - lastTime >= interval) {
+        const index = Math.floor(Math.random() * names.length)
+        setCurrentName(names[index])
+        lastTime = now
+        interval += 5 // ค่อยๆ เพิ่มช่วงเวลา เพื่อให้เลขช้าลงเรื่อยๆ
       }
-      setSpeed((prevSpeed) => prevSpeed + 100)
-    }, 500)
+  
+      requestAnimationFrame(run)
+    }
+  
+    requestAnimationFrame(run)
   }
 
   const handleAdd = () => {
